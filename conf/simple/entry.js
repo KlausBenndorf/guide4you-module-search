@@ -14,4 +14,4 @@ import 'file?name=proxy/AjaxProxy.[ext]!guide4you-proxy/LICENSE.txt'
 import SearchModule from '../../src/SearchModule'
 import NominatimSearchParser from '../../src/NominatimSearchParser'
 
-createG4U('#map', clientConf, layerConf, [new SearchModule({ parsers: { nominatim: NominatimSearchParser }})])
+createG4U('#g4u-map', clientConf, layerConf, [new SearchModule({ parsers: { nominatim: NominatimSearchParser }})])

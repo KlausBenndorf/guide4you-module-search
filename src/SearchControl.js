@@ -354,9 +354,8 @@ export default class SearchControl extends Control {
         success: results => {
           this.features_ = this.parser_.parseFeatures(results).slice(0, this.amountDropdownEntries_)
           resolve()
-        },
-        error: () => {
-          reject('Problem while trying to get search results from the Server. (SearchURL: ' + url + ')')
+        }, error: (jqXHR, textStatus) => {
+          reject(`Problem while trying to get search results from the Server: ${textStatus} - ${jqXHR.responseText} (SearchURL: ${url})`)
         }
       })
     })

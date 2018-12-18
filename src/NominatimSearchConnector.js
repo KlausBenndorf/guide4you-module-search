@@ -50,7 +50,7 @@ export class NominatimSearchConnector extends SearchConnector {
         let extent = this.map_.getView().calculateExtent(this.map_.getSize())
         let extentString = ol.proj.transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
         finalUrl = this.serviceURL.clone()
-         .expandTemplate('searchstring', searchTerm).expandTemplate('visibleExtent', extentString).finalize()
+          .expandTemplate('searchstring', searchTerm).expandTemplate('visibleExtent', extentString).finalize()
       } else {
         finalUrl = this.serviceURL.clone().expandTemplate('searchstring', searchTerm).finalize()
       }

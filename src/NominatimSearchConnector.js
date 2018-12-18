@@ -24,6 +24,7 @@ export class NominatimSearchConnector extends SearchConnector {
     super.setMap(map)
 
     if (map) {
+      this.map_ = map
       if (this.searchVisibleExtent) {
         this.serviceURL.addParam(
           'format=json&q={searchstring}&addressdetails=1&dedupe=1&viewboxlbrt={visibleExtent}' +
@@ -46,7 +47,7 @@ export class NominatimSearchConnector extends SearchConnector {
     return new Promise((resolve, reject) => {
       let finalUrl
       if (this.searchVisibleExtent) {
-        let extent = map.getView().calculateExtent(map.getSize())
+        let extent = this.map_.getView().calculateExtent(this.map_.getSize())
         let extentString = ol.proj.transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
         finalUrl = this.serviceURL.clone()
          .expandTemplate('searchstring', searchTerm).expandTemplate('visibleExtent', extentString).finalize()

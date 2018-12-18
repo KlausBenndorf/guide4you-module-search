@@ -12,19 +12,29 @@ export class NominatimSearchConnector extends SearchConnector {
     super(options)
 
     this.dataProjection = 'EPSG:4326'
+
+    if (options.searchVisibleExtent) {
+      this.searchVisibleExtent = true
+    } else {
+      this.searchVisibleExtent = false
+    }
   }
 
   setMap (map) {
     super.setMap(map)
 
     if (map) {
-      let extent = map.getView().calculateExtent(map.getSize())
-
-      let extentString = transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
-
-      this.serviceURL.addParam(
-        'format=json&q={searchstring}&addressdetails=1&dedupe=1&viewboxlbrt=' + extentString +
-        '&bounded=1&extratags=1&namedetails=1')
+      if (this.searchVisibleExtent) {
+        this.serviceURL.addParam(
+          'format=json&q={searchstring}&addressdetails=1&dedupe=1&viewboxlbrt={visibleExtent}' +
+          '&bounded=1&extratags=1&namedetails=1')
+      } else {
+        let extent = map.getView().calculateExtent(map.getSize())
+        let extentString = transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
+        this.serviceURL.addParam(
+          'format=json&q={searchstring}&addressdetails=1&dedupe=1&viewboxlbrt=' + extentString +
+          '&bounded=1&extratags=1&namedetails=1')
+      }
     }
   }
 
@@ -34,8 +44,15 @@ export class NominatimSearchConnector extends SearchConnector {
 
   getSearchResult (searchTerm) {
     return new Promise((resolve, reject) => {
-      let finalUrl = this.serviceURL.clone().expandTemplate('searchstring', searchTerm).finalize()
-
+      let finalUrl
+      if (this.searchVisibleExtent) {
+        let extent = map.getView().calculateExtent(map.getSize())
+        let extentString = ol.proj.transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
+        finalUrl = this.serviceURL.clone()
+         .expandTemplate('searchstring', searchTerm).expandTemplate('visibleExtent', extentString).finalize()
+      } else {
+        finalUrl = this.serviceURL.clone().expandTemplate('searchstring', searchTerm).finalize()
+      }
       $.ajax({
         url: finalUrl,
         dataType: 'json',

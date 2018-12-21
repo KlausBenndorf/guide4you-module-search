@@ -13,11 +13,7 @@ export class NominatimSearchConnector extends SearchConnector {
 
     this.dataProjection = 'EPSG:4326'
 
-    if (options.searchVisibleExtent) {
-      this.searchVisibleExtent = true
-    } else {
-      this.searchVisibleExtent = false
-    }
+    this.searchVisibleExtent = options.searchVisibleExtent === true
   }
 
   setMap (map) {
@@ -48,7 +44,7 @@ export class NominatimSearchConnector extends SearchConnector {
       let finalUrl
       if (this.searchVisibleExtent) {
         let extent = this.map_.getView().calculateExtent(this.map_.getSize())
-        let extentString = ol.proj.transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
+        let extentString = transformExtent(extent, this.featureProjection, this.dataProjection).join(',')
         finalUrl = this.serviceURL.clone()
           .expandTemplate('searchstring', searchTerm).expandTemplate('visibleExtent', extentString).finalize()
       } else {
